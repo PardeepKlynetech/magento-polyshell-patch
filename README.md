@@ -1,6 +1,6 @@
 # MarkShust_PolyshellPatch
 
-Mitigates the PolyShell vulnerability (APSB25-94) — an unrestricted file upload in the Magento REST API that allows attackers to upload executable files via cart item custom option file uploads.
+Mitigates the PolyShell vulnerability — an unrestricted file upload in the Magento REST API that allows attackers to upload executable files via cart item custom option file uploads.
 
 ## What this module does
 
