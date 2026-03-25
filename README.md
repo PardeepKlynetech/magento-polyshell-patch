@@ -71,10 +71,21 @@ If any files are found (especially `.php`, `.phtml`, or `.phar`), investigate im
 
 This module is an interim hotfix. Remove it once Adobe backports the official patch to production Magento versions (2.4.8-p4 or later). To remove:
 
+If you have installed it manually:
+
 ```bash
 bin/magento module:disable MarkShust_PolyshellPatch
 bin/magento setup:upgrade
 rm -rf app/code/MarkShust/PolyshellPatch
+bin/magento cache:flush
+```
+
+If you have installed it by composer:
+
+```bash
+bin/magento module:disable MarkShust_PolyshellPatch
+bin/magento setup:upgrade
+composer remove markshust/magento2-module-polyshell-patch
 bin/magento cache:flush
 ```
 
