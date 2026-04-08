@@ -54,6 +54,33 @@ class ImageContentValidatorExtension
         $pathInfo = $this->ioFile->getPathInfo($fileName);
         $extension = strtolower($pathInfo['extension'] ?? '');
 
+        // Normalize filename
+        $fileName = strtolower($fileName);
+
+        // 🚨 1. Block dangerous substrings anywhere
+        $blocked = ['.php', '.phtml', '.phar', '.php5', '.php7'];
+        foreach ($blocked as $bad) {
+            if (strpos($fileName, $bad) !== false) {
+                throw new InputException(
+                    new Phrase('File name contains forbidden extension pattern.')
+                );
+            }
+        }
+
+        // 🚨 2. Allow only safe characters
+        if (!preg_match('/^[a-z0-9._-]+$/', $fileName)) {
+            throw new InputException(
+                new Phrase('Invalid file name format.')
+            );
+        }
+
+        // 🚨 3. Enforce single extension
+        if (substr_count($fileName, '.') !== 1) {
+            throw new InputException(
+                new Phrase('Multiple extensions are not allowed.')
+            );
+        }
+
         if ($extension && !in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
             throw new InputException(
                 new Phrase('The image file extension "%1" is not allowed.', [$extension])
