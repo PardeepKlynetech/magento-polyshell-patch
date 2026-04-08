@@ -7,6 +7,8 @@ namespace MarkShust\PolyshellPatch\Plugin;
 use Magento\Framework\Api\Data\ImageContentInterface;
 use Magento\Framework\Api\ImageProcessor;
 use Magento\Framework\Api\Uploader;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Phrase;
 
 /**
  * Enforce an allowlist of file extensions before ImageProcessor saves uploaded files.
@@ -46,6 +48,24 @@ class ImageProcessorRestrictExtensions
         $entityType,
         $imageContent
     ) {
+        $fileContent = base64_decode($imageContent->getBase64EncodedData(), true);
+
+        if ($fileContent === false) {
+            throw new InputException(new Phrase('Invalid base64 data.'));
+        }
+
+        // Detect real MIME
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $realMime = $finfo->buffer($fileContent);
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+
+        if (!in_array($realMime, $allowedMimes, true)) {
+            throw new InputException(
+                new Phrase('Invalid real MIME type detected.')
+            );
+        }
+
         $this->uploader->setAllowedExtensions(self::ALLOWED_EXTENSIONS);
         return null;
     }
